@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: expert
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/expert
+    username: root
+    password: 103156
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  #  ssl:
+  #    key-store: classpath:${SSL_FILE}
+  #    key-store-type: PKCS12
+  #    key-store-password: ${SSL_PASSWORD}
+  #    key-password: ${SSL_PASSWORD}
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect

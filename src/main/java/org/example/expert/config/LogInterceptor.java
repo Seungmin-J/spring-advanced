@@ -3,9 +3,9 @@ package org.example.expert.config;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.expert.domain.common.exception.UnauthorizedAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class LogInterceptor implements HandlerInterceptor {
@@ -20,22 +20,30 @@ public class LogInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), "토큰이 없습니다");
-            return false;
+
+        if (authHeader == null) {
+            logger.info("토큰 없음");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰 없음");
         }
 
         String token = jwtUtil.substringToken(authHeader);
 
-        try {
-            Claims claims = jwtUtil.extractClaims(token);
-            logger.info("요청 시각 ={}, URL ={}", claims.getIssuedAt(), request.getRequestURI());
-        }catch (RuntimeException e) {
-            logger.info("검증 실패");
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+        Claims claims = jwtUtil.extractClaims(token);
+        logger.info("요청 시각 ={}, URL ={}", claims.getIssuedAt(), request.getRequestURI());
+
+        String userRole = claims.get("userRole", String.class);
+        logger.info("userRole={}", userRole);
+
+        if (!"ADMIN".equals(userRole)) {
+            throw new UnauthorizedAccessException("관리자만 접근 가능합니다");
+        }
+
+        if (!authHeader.startsWith("Bearer ")) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bearer 형식 불일치");
             return false;
         }
 
         return true;
     }
+
 }
