@@ -24,6 +24,7 @@ public class LogInterceptor implements HandlerInterceptor {
         if (authHeader == null) {
             logger.info("토큰 없음");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰 없음");
+            return false;
         }
 
         String token = jwtUtil.substringToken(authHeader);
