@@ -22,8 +22,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LogInterceptor(jwtUtil))
+        registry.addInterceptor(new LogInterceptor())
                 .order(1)
+                .addPathPatterns("/admin/**");
+        registry.addInterceptor(new AuthInterceptor(jwtUtil))
+                .order(2)
                 .addPathPatterns("/admin/**");
     }
 }
