@@ -1,5 +1,6 @@
 package org.example.expert.domain.comment.service;
 
+import org.assertj.core.api.Assertions;
 import org.example.expert.domain.comment.dto.request.CommentSaveRequest;
 import org.example.expert.domain.comment.dto.response.CommentSaveResponse;
 import org.example.expert.domain.comment.entity.Comment;
@@ -33,6 +34,8 @@ class CommentServiceTest {
     private TodoRepository todoRepository;
     @InjectMocks
     private CommentService commentService;
+    @InjectMocks
+    private CommentAdminService commentAdminService;
 
     @Test
     public void comment_등록_중_할일을_찾지_못해_에러가_발생한다() {
@@ -70,5 +73,19 @@ class CommentServiceTest {
 
         // then
         assertNotNull(result);
+    }
+
+    @Test
+    void comment삭제() {
+        long todoId = 1;
+        CommentSaveRequest request = new CommentSaveRequest("contents");
+        AuthUser authUser = new AuthUser(1L, "email", UserRole.USER);
+        User user = User.fromAuthUser(authUser);
+        Todo todo = new Todo("title", "title", "contents", user);
+        Comment comment = new Comment(request.getContents(), user, todo);
+
+        commentAdminService.deleteComment(1L);
+
+        Assertions.assertThat(commentRepository.findById(1L)).isEmpty();
     }
 }

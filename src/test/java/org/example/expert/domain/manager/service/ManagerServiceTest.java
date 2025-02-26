@@ -121,4 +121,9 @@ class ManagerServiceTest {
         assertEquals(managerUser.getId(), response.getUser().getId());
         assertEquals(managerUser.getEmail(), response.getUser().getEmail());
     }
+
+    @Test
+    void manager_정상삭제() {
+
+    }
 }

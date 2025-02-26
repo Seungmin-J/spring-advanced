@@ -26,12 +26,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (bearerToken == null) {
-            logger.info("토큰 없음");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰 없음");
-            return false;
-        }
-
         String token = jwtUtil.substringToken(bearerToken);
 
         Claims claims = jwtUtil.extractClaims(token);
